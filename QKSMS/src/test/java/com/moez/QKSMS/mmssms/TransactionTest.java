@@ -1,41 +1,45 @@
 package com.moez.QKSMS.mmssms;
 
+import android.content.BroadcastReceiver;
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.telephony.SmsManager;
 
-import com.moez.QKSMS.BuildConfig;
+import com.android.mms.transaction.ProgressCallbackEntity;
 import com.moez.QKSMS.common.QKPreferences;
 
-import org.codehaus.plexus.component.configurator.ConfigurationListener;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowConnectivityManager;
+import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowSmsManager;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.after;
-import static org.mockito.Mockito.times;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(PowerMockRunner.class)
@@ -65,49 +69,61 @@ public class TransactionTest {
         assertFalse(transaction.checkMMS(message));
     }
 
-    @Ignore
     @Test
     public void testSendSms() throws Exception {
-        final String address = "5555555555";
-        final String body = "Hello World";
-        ArrayList<String> parts = new ArrayList<>();
-        parts.add(body);
-
-        Message message = new Message(body, address);
+        final String text = "Test";
+        final String[] addresses = new String[] {"5555555555"};
+        Message message = new Message(text, addresses);
         Transaction transaction = new Transaction(RuntimeEnvironment.application, new Settings());
 
-        Transaction spyTransaction = PowerMockito.spy(transaction);
-        PowerMockito
-                .when(spyTransaction,
-                        Transaction.class.getMethod("sendDelayedSms", SmsManager.class, String.class, String.class,
-                                ArrayList.class, ArrayList.class, int.class, Uri.class));
-//                        "sendDelayedSms", SmsManager.getDefault(), address, parts,
-//                        new ArrayList<>(), new ArrayList<>(), 0, null).thenReturn(null);
+        Cursor mockCursor = Mockito.mock(Cursor.class);
+        Mockito.doReturn(true).when(mockCursor).moveToFirst();
+        Mockito.doReturn(0L).when(mockCursor).getLong(anyInt());
+        Mockito.doNothing().when(mockCursor).close();
 
-//        transaction.sendNewMessage(message, 0);
+        ContentProvider mockProvider = Mockito.mock(ContentProvider.class);
+        Mockito.doReturn(mockCursor).when(mockProvider)
+                .query(any(Uri.class), any(String[].class), anyString(), any(String[].class), anyString());
+        Mockito.doReturn(Uri.parse("content://sms/inbox/1")).when(mockProvider).insert(any(Uri.class), any(ContentValues.class));
 
-        PowerMockito.verifyPrivate(spyTransaction, after(1000).times(1))
-                .invoke("sendDelayedSms", SmsManager.getDefault(), address, parts,
-                        any(ArrayList.class), any(ArrayList.class), anyInt(), any(Uri.class));
-    }
+        ShadowContentResolver.registerProvider("sms", mockProvider);
 
-    @Ignore
-    @Test
-    // TODO: Figure out how to delay this enough to let the thread in sendDelayedSms run
-    public void testSendDelayedSms() throws Exception {
-        final String address = "5555555555";
-        final String body = "Hello World";
-        ArrayList<String> parts = new ArrayList<>();
-        parts.add(body);
-
-        Message message = new Message(body, address);
-        Transaction transaction = new Transaction(RuntimeEnvironment.application, new Settings());
         transaction.sendNewMessage(message, 0);
+
+        Thread.sleep(1000);
 
         ShadowSmsManager shadowSmsManager = shadowOf(SmsManager.getDefault());
         ShadowSmsManager.TextMultipartParams sentParams = shadowSmsManager.getLastSentMultipartTextMessageParams();
 
-        assertEquals(sentParams.getDestinationAddress(), address);
-        assertEquals(sentParams.getParts().get(0), parts.get(0));
+        assertNotNull(sentParams);
+        assertEquals(sentParams.getDestinationAddress(), addresses[0]);
+        assertEquals(sentParams.getParts().get(0), text);
     }
+
+    @Ignore
+    @Test
+    public void testSendNewMms() throws Exception {
+        final String text = "Test";
+        final String[] addresses = new String[] {"5555555555"};
+        Bitmap[] bitmaps = new Bitmap[] {Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)};
+        Message message = new Message(text, addresses, bitmaps);
+        Transaction transaction = new Transaction(RuntimeEnvironment.application, new Settings());
+
+        NetworkInfo mockInfo = Mockito.mock(NetworkInfo.class);
+        Mockito.doReturn(NetworkInfo.State.CONNECTED).when(mockInfo).getState();
+
+        ShadowConnectivityManager shadowConnectivityManager = shadowOf((ConnectivityManager)RuntimeEnvironment.application.getSystemService(Context.CONNECTIVITY_SERVICE));
+        shadowConnectivityManager.setNetworkInfo(ConnectivityManager.TYPE_MOBILE_MMS, mockInfo);
+
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ProgressCallbackEntity.PROGRESS_STATUS_ACTION);
+        BroadcastReceiver receiver = Mockito.mock(BroadcastReceiver.class);
+        RuntimeEnvironment.application.registerReceiver(receiver, filter);
+
+        transaction.sendNewMessage(message, 0);
+
+        Mockito.verify(receiver, after(1000)).onReceive(any(Context.class), any(Intent.class));
+    }
+
 }

@@ -67,6 +67,11 @@ android {
         disable 'MissingTranslation'
     }
 
+    sourceSets {
+        unitTest {
+            java.srcDir file("QKSMS")
+        }
+    }
 }
 
 buildscript {
@@ -126,6 +131,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.robolectric:robolectric:3.1'
+    testCompile "org.robolectric:shadows-multidex:3.1"
     testCompile 'org.powermock:powermock-api-mockito:1.6.6'
     testCompile 'org.powermock:powermock-module-junit4:1.6.6'
     testCompile 'org.powermock:powermock-module-junit4-rule-agent:1.6.6'
