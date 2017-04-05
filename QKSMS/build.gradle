@@ -144,7 +144,7 @@ dependencies {
 }
 
 pitest {
-    targetClasses = ['com.moez.QKSMS.mmssms.*']
+    targetClasses = ['com.moez.QKSMS.mmssms.*', 'com.moez.QKSMS.receiver.*']
     threads = 5
     outputFormats = ['HTML']
     timeoutConstInMillis = 20000 // Necessary to allow Robolectric to finish. See http://pitest.org/faq/#im-seeing-a-lot-of-timeouts-whats-going-on
