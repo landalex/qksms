@@ -158,9 +158,9 @@ public class MessagingReceiverTest {
 
         Intent expectedService = new Intent(application, NotificationService.class);
         Intent serviceIntent = shadowOf(application).getNextStartedService();
-        assertNotNull("Service started ",serviceIntent);
-        assertEquals("Started service class ", serviceIntent.getComponent(),
-                expectedService.getComponent());
+        assertNotNull("Service not started ",serviceIntent);
+        assertEquals("Service Component is not the expected Notification Service", expectedService.getComponent(),
+                serviceIntent.getComponent());
     }
 
     @Test
