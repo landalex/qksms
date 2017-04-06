@@ -71,14 +71,9 @@ public class DeleteConversationTest extends MainActivityTest{
 
         ViewInteraction conversationListItemView = onView(
                 allOf(withText(randomAddress),
-//                        withParent(withId(R.id.conversations_list)),
                         isDisplayed()));
         conversationListItemView.check(matches(isDisplayed()));
         conversationListItemView.perform(longClick());
-
-//        ViewInteraction recyclerView = onView(
-//                allOf(withId(R.id.conversations_list), isDisplayed()));
-//        recyclerView.perform(actionOnItemAtPosition(0, click()));
 
         try {
             Thread.sleep(100);
