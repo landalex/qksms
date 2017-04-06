@@ -58,9 +58,9 @@ public class DeleteConversationTest extends MainActivityTest{
                 allOf(withId(R.id.compose_reply_text), isDisplayed()));
         qKEditText.perform(click(), replaceText("Test"), closeSoftKeyboard());
 
-        ViewInteraction frameLayout = onView(
+        ViewInteraction sendButton = onView(
                 allOf(withId(R.id.compose_button), isDisplayed()));
-        frameLayout.perform(click());
+        sendButton.perform(click());
 
         ViewInteraction imageButton = onView(
                 allOf(withContentDescription("Navigate up"),
@@ -69,12 +69,12 @@ public class DeleteConversationTest extends MainActivityTest{
                         isDisplayed()));
         imageButton.perform(click());
 
-        ViewInteraction linearLayout = onView(
+        ViewInteraction conversationListItemView = onView(
                 allOf(withText(randomAddress),
 //                        withParent(withId(R.id.conversations_list)),
                         isDisplayed()));
-        linearLayout.check(matches(isDisplayed()));
-        linearLayout.perform(longClick());
+        conversationListItemView.check(matches(isDisplayed()));
+        conversationListItemView.perform(longClick());
 
 //        ViewInteraction recyclerView = onView(
 //                allOf(withId(R.id.conversations_list), isDisplayed()));
@@ -86,9 +86,9 @@ public class DeleteConversationTest extends MainActivityTest{
             e.printStackTrace();
         }
 
-        ViewInteraction actionMenuItemView = onView(
+        ViewInteraction deleteButton = onView(
                         withContentDescription("Delete"));
-        actionMenuItemView.perform(click());
+        deleteButton.perform(click());
 
         ViewInteraction qKTextView = onView(
                 allOf(withId(R.id.buttonPositive), withText("YES"),
@@ -97,7 +97,7 @@ public class DeleteConversationTest extends MainActivityTest{
                         isDisplayed()));
         qKTextView.perform(click());
 
-        linearLayout.check(doesNotExist());
+        conversationListItemView.check(doesNotExist());
     }
 
     private static Matcher<View> childAtPosition(

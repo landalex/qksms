@@ -35,9 +35,9 @@ public class ReplyExistingConversationTest extends MainActivityTest{
                 allOf(withId(R.id.compose_reply_text), isDisplayed()));
         qKEditText.perform(replaceText(messageString), closeSoftKeyboard());
 
-        ViewInteraction frameLayout = onView(
+        ViewInteraction sendButton = onView(
                 allOf(withId(R.id.compose_button), isDisplayed()));
-        frameLayout.perform(click());
+        sendButton.perform(click());
 
         ViewInteraction textView = onView(
                 allOf(withText(messageString),

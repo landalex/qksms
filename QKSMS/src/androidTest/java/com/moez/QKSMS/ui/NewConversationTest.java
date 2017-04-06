@@ -49,7 +49,7 @@ public class NewConversationTest extends MainActivityTest {
             e.printStackTrace();
         }
 
-        ViewInteraction multiAutoCompleteTextView = onView(
+        ViewInteraction recipientsEditTextView = onView(
                 allOf(withId(R.id.compose_recipients),
                         childAtPosition(
                                 childAtPosition(
@@ -57,7 +57,7 @@ public class NewConversationTest extends MainActivityTest {
                                         0),
                                 0),
                         isDisplayed()));
-        multiAutoCompleteTextView.check(matches(isDisplayed()));
+        recipientsEditTextView.check(matches(isDisplayed()));
 
         ViewInteraction editText = onView(
                 allOf(withHint(R.string.hint_reply), isDisplayed()));
@@ -75,9 +75,9 @@ public class NewConversationTest extends MainActivityTest {
                 allOf(withId(R.id.compose_reply_text), isDisplayed()));
         qKEditText.perform(click(), replaceText(messageString), closeSoftKeyboard());
 
-        ViewInteraction frameLayout = onView(
+        ViewInteraction sendButton = onView(
                 allOf(withId(R.id.compose_button), isDisplayed()));
-        frameLayout.perform(click());
+        sendButton.perform(click());
 
         try {
             Thread.sleep(500);
