@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
+apply plugin: 'pl.droidsonroids.pitest'
 
 repositories {
     mavenCentral()
@@ -140,4 +141,12 @@ dependencies {
     androidTestCompile 'com.android.support:support-annotations:22.2.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
+}
+
+pitest {
+    targetClasses = ['com.moez.QKSMS.mmssms.*', 'com.moez.QKSMS.receiver.*']
+    threads = 5
+    outputFormats = ['HTML']
+    timeoutConstInMillis = 20000 // Necessary to allow Robolectric to finish. See http://pitest.org/faq/#im-seeing-a-lot-of-timeouts-whats-going-on
+    verbose = true
 }
