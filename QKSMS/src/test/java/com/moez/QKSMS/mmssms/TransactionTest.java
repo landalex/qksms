@@ -21,10 +21,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -42,11 +38,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.after;
 import static org.robolectric.Shadows.shadowOf;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*"})
+@RunWith(RobolectricTestRunner.class)
 @Config(sdk = 22)
-@PrepareForTest(Transaction.class)
 public class TransactionTest {
 
     @Before

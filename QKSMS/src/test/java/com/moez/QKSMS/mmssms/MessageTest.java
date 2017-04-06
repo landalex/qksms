@@ -1,13 +1,9 @@
 package com.moez.QKSMS.mmssms;
 
 import android.graphics.Bitmap;
-import android.location.Address;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -15,9 +11,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*"})
+@RunWith(RobolectricTestRunner.class)
 @Config(manifest=Config.NONE)
 public class MessageTest {
 
