@@ -329,7 +329,7 @@ public class MmsConfig {
             while (true) {
                 nextElement(parser);
                 String tag = parser.getName();
-                if (tag == null) {
+                if (tag == null || tag.isEmpty()) {
                     break;
                 }
                 String name = parser.getAttributeName(0);

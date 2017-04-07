@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
+apply plugin: 'pl.droidsonroids.pitest'
 
 repositories {
     mavenCentral()
@@ -36,6 +37,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -45,9 +47,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'qksms-proguard.pro'
         }
         debug {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'qksms-proguard.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'qksms-proguard.pro'
         }
     }
 
@@ -65,6 +68,11 @@ android {
         disable 'MissingTranslation'
     }
 
+    sourceSets {
+        unitTest {
+            java.srcDir file("QKSMS")
+        }
+    }
 }
 
 buildscript {
@@ -76,6 +84,12 @@ buildscript {
     dependencies {
         classpath 'me.tatarka:gradle-retrolambda:3.2.2'
         classpath 'io.fabric.tools:gradle:1.21.5'
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-annotations:22.2.1'
     }
 }
 
@@ -113,4 +127,22 @@ dependencies {
     withAnalyticsCompile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+
+    // Test libraries
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.robolectric:robolectric:3.1'
+    testCompile "org.robolectric:shadows-multidex:3.1"
+    androidTestCompile 'org.mockito:mockito-android:2.7.19'
+    androidTestCompile 'com.android.support:support-annotations:22.2.1'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+}
+
+pitest {
+    targetClasses = ['com.moez.QKSMS.mmssms.*', 'com.moez.QKSMS.receiver.*']
+    threads = 5
+    outputFormats = ['HTML']
+    timeoutConstInMillis = 20000 // Necessary to allow Robolectric to finish. See http://pitest.org/faq/#im-seeing-a-lot-of-timeouts-whats-going-on
+    verbose = true
 }

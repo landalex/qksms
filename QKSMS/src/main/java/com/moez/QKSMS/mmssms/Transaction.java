@@ -510,7 +510,7 @@ public class Transaction {
                 Log.e(TAG, "exception thrown", e);
 
                 // use the old way if something goes wrong with the persister
-                insert(context, recipients, parts, subject);
+                info.location = insert(context, recipients, parts, subject);
             }
         }
 
