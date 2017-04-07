@@ -4,20 +4,17 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.moez.QKSMS.ui.settings.SettingsFragment;
 
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.runner.RunWith;
 
 /**
  * Base test class for tests beginning in the Main Activity. Provides a setUp method that disables
  * the Welcome screen and MMS setup dialogs.
  */
 
-@RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class, false, false);
