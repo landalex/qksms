@@ -8,6 +8,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -16,6 +17,7 @@ import static junit.framework.Assert.assertTrue;
 public class MessageTest {
 
     private static final Bitmap TEST_INPUT_BITMAP = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+    private static final String TEST_SUBJECT = "Test Subject";
 
     private static final String MIME_TYPE_AUDIO = "audio/wav";
     private static final String MIME_TYPE_VIDEO = "video/3gpp";
@@ -95,6 +97,41 @@ public class MessageTest {
         Message message = new Message();
         message.setImage(TEST_INPUT_BITMAP);
         assertEquals(message.getImages()[0], TEST_INPUT_BITMAP);
+    }
+
+    @Test
+    public void testSetSubject() {
+        Message message = new Message();
+        message.setSubject(TEST_SUBJECT);
+        assertEquals(message.getSubject(), TEST_SUBJECT);
+    }
+
+    @Test
+    public void testSetSave() {
+        Message message = new Message();
+        message.setSave(false);
+        assertFalse(message.getSave());
+
+        message.setSave(true);
+        assertTrue(message.getSave());
+    }
+
+    @Test
+    public void testSetMessageType() {
+        Message message = new Message();
+        message.setType(Message.TYPE_SMSMMS);
+        assertEquals(message.getType(), Message.TYPE_SMSMMS);
+
+        message.setType(Message.TYPE_VOICE);
+        assertEquals(message.getType(), Message.TYPE_VOICE);
+    }
+
+    @Test
+    public void testSetDelay() {
+        final int delay = 10;
+        Message message = new Message();
+        message.setDelay(delay);
+        assertEquals(message.getDelay(), delay);
     }
 
     @Test
